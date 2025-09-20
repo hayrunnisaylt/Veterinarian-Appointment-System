@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+*{
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+}
+body{
+	background-color: #e4e9f7;
+	background-image: url(../image/background.png);
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+.container{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 90vh;
+}
+.box{
+	background-color: #fdfdfd;
+	display: flex;
+	flex-direction: column;
+	padding: 25px 25px;
+	border-radius: 20px;
+	box-shadow:  0 0 128px 0 rgba(0,0, 0, 0.1),
+				 0 32px 64px -48px rgba(0,0, 0, 0.5);
+}
+.form-box{
+	width:450px;
+	margin: 0px 10px;
+}
+.form-box header{
+	font-size: 25px;
+	font-weight: 600;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #e6e6e6;
+	margin-bottom: 10px;
+}
+.form-box form .field{
+	display: flex;
+	margin-bottom: 10px;
+	flex-direction: column;
+}
+.form-box form .input input{
+	height: 40px;
+	width: 100%;
+	font-size: 16px;
+	padding: 0 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	outline: none;
+}
+.btn{
+	height: 35px;
+	background-color: #7ba85a;
+	border: 0;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 15px;
+	cursor: pointer;
+	transition: all .3s;
+	margin-top: 10px;
+	padding:  0px 10px;
+}
+.btn:hover{
+	opacity: 0.82;
+}
+.submit{
+	width: 100%;
+}
+.links{
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+/********HOME********/
+.nav{
+	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+	z-index: 100;
+	height: 100px;
+}
+.nav .logo img {
+    height: 8rem;
+    margin: 5px;
+}
+.logo_yazısı {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 980px;
+	padding-top: 2px;
+}
+.logo_yazısı .ilk {
+    margin-left: 0;
+}
+.logo_yazısı .orta {
+    margin-left: 20px;
+    color: #7ba85a;
+    font-style: italic;
+    font-weight: 800;
+}
+.logo_yazısı .son {
+    margin-left: 40px;
+}
+.logo_yazısı span {
+    font-size: 18px;
+    font-weight:600;
+    color: #333; 
+}
+.btn-çıkış{
+	background-color: #7ba85a;
+	border: 0;
+	color: white;
+    width: 19vh;
+    height: 6.5vh;
+    border-radius: 8px;
+    padding: 0.7rem;
+    margin: 1vh 1vh 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	font-size: 1.0rem;
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+.right-links a {
+    position: relative;
+    text-decoration: none;
+}
+.btn-çıkış:hover{
+    background-color: #6f8661;
+    color: white;
+}
+
+main{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 60px;
+}
+.main-box{
+	display: flex;
+	flex-direction: column;
+	width: 70%;
+}
+.main-box .top{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.bottom{
+	width: 100%;
+	margin-top: 20px;
+}
+@media only screen and(max-width:840px){
+	.main-box .top
+	{
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+	.top .box{
+		margin: 10px 10px;
+	}
+	.botttom
+	{
+		margin-top: 0;
+	}
+}
+.message{
+	text-align: center;
+	background: #f9eded;
+	padding: 15px 0px;
+	border: 1px solid #699053;
+	border-radius: 10px;
+	color: red;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.btn-randevu
+{
+	border: none;
+	background-color: white;
+	font-size: 1rem;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.modal-content {
+    margin: 10% auto;
+    padding: 70px;
+	padding-left: 130px;
+    width: 50%;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin-bottom: 30px;
+	margin-right: 70px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.iptal {
+    color: red;
+    text-decoration: underline;
+    cursor: pointer;
+	margin-left: 800px;
+	text-decoration: none;
+}
+
+.iptal:hover {
+    color: darkred;
+}

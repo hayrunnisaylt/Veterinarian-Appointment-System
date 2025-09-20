@@ -1,0 +1,12 @@
+{
+    "name": "hayrunnisa/htdocs",
+    "require": {
+        "mongodb/mongodb": "^1.20"
+    },
+    "authors": [
+        {
+            "name": "Hayrunnisa Yoltan",
+            "email": "hayrunnisayoltan@gmail.com"
+        }
+    ]
+}
