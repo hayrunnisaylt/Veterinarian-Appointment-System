@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sıkça Sorulan Sorular</title>
+    <link rel="stylesheet" href="SSS.css">
+</head>
+<body>
+	<div class="nav">
+    	<a href="../İndex/index.html" class="logo"> 
+			<img src="../image/Logo.png" alt="Logo"> 
+		</a> 
+		<a href="../İndex/index.html" style="text-decoration: none;"> 
+			<div class="logo_yazısı"> 
+				<span class="ilk">Veteriner</span> 
+				<span class="orta">Randevu</span> 
+				<span class="son">Sistemi</span> 
+			</div> 
+		</a>
+        </div>
+    </div>
+    <div class="faq-container">
+        <h2>Sıkça Sorulan Sorular</h2>
+        <div class="faq">
+            <h3>1. Veteriner randevusunu nasıl alırım?</h3>
+            <p>Veteriner randevusu almak için sistemimize giriş yapmanız ve uygun bir zaman dilimi seçmeniz gerekmektedir. Ardından, randevunuzu onaylayabilirsiniz.</p>
+        </div>
+        <div class="faq">
+            <h3>2. Laboratuvar sonuçlarına nasıl ulaşabilirim?</h3>
+            <p>Laboratuvar sonuçlarına, kullanıcı adı ve şifrenizle giriş yaptıktan sonra kolayca ulaşabilirsiniz. Sonuçlarınızı hızlı bir şekilde görebileceksiniz.</p>
+        </div>
+        <div class="faq">
+            <h3>3. Nöbetçi veterinerlere nasıl ulaşırım?</h3>
+            <p>Nöbetçi veterinerleri aramak için, kullanıcı adı ve şifrenizle sisteme giriş yaparak en yakın nöbetçi veterinerin bilgilerine ulaşabilirsiniz.</p>
+        </div>
+        <div class="faq">
+            <h3>4. Hesap oluşturmak zorunlu mu?</h3>
+            <p>Evet, sistemimize giriş yapabilmek için bir kullanıcı hesabı oluşturmanız gerekmektedir.</p>
+        </div>
+    </div>
+</body>
+<script>
+
+    document.querySelectorAll('.faq h3').forEach(function (question) {
+        question.addEventListener('click', function () {
+            const faq = this.parentElement;
+            faq.classList.toggle('open'); 
+        });
+    });
+</script>
+
+</html>

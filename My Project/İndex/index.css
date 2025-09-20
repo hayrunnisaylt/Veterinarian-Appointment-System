@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@100..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+*{
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    text-transform: capitalize;
+    transition: 0.2 ease;
+    font-family: "Poppins", sans-serif;
+}
+html{
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-padding-top: 9rem;
+    scroll-behavior: smooth;
+}
+body{
+    background-color: white;
+    height: auto;
+}
+.header{
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    position: sticky;
+    top: 0;
+    height: 100px;
+	z-index: 1000;
+}
+.header .logo img{
+    height: 13rem;
+    margin: 10px;
+}
+.logo_yazısı {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 780px;
+	padding-top: 2px;
+}
+.logo_yazısı .ilk {
+    margin-left: 0;
+}
+.logo_yazısı .orta {
+    margin-left: 20px;
+    color: #7ba85a;
+    font-style: italic;
+    font-weight: 800;
+}
+.logo_yazısı .son {
+    margin-left: 40px;
+}
+.logo_yazısı span {
+    font-size: 18px;
+    font-weight:600;
+    color: #333; 
+}
+.navbar{
+    margin-top: 10px;
+    display: flex;
+    position: sticky;
+    border-radius: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}
+.randevu_button a {
+    color: white;
+    font-size: 1.6rem;
+    border-bottom: 0.2rem solid transparent;
+    text-decoration: none;
+}
+.randevu_button, .harita_button {
+    background-color: #7ba85a;
+    width: 19vh;
+    height: 6.5vh;
+    border-radius: 8px;
+    padding: 0.7rem;
+    margin: 1vh 1vh 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+.harita_button img {
+    width: 25px;
+    height: 25px;
+}
+.harita_button a {
+    color: white;
+    font-size: 1.6rem;
+    border-bottom: 0.2rem solid transparent;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-right: 10px;
+}
+.randevu_button:hover, .harita_button:hover {
+    background-color: #6f8661;
+    color: white;
+}
+.randevu_button a:hover, .harita_button a:hover {
+    border-color: white;
+    padding-bottom: 0.2rem;
+    transition: all 0.3s ease;
+}
+#myCarousel{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	overflow: hidden;
+}
+#myCarousel .item img {
+width: 100%;
+height: 100vh;
+object-fit: cover;
+object-position: center center;
+}
+.carousel-caption{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	justify-content: center;
+	margin-bottom: 200px;
+	margin-left: 70px;
+	font-size: large;
+}
+.carousel-indicators{
+	margin-bottom: 30px;
+}
+.sidenav{
+	height: 100vh;
+	width: 0px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding-top: 130px;
+	background-color: #ffffffee;
+	z-index: 999;
+	transition: 0.5s;
+	overflow-x: hidden;
+}
+.sidenav a{
+	display: block;
+	text-decoration: none;
+	font-size: 20px;
+	color: #aaa;
+	padding: 8px 8px 30px 35px;
+	transition: 0.3s;
+}
+.sidenav a:hover{
+	text-decoration: none;
+	color: #7ba85a
+}
+.open{
+	font-size: 30px;
+	cursor: pointer;
+}
+.özellikler {
+    position: relative;
+    margin-top: 570px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5vh;
+}
+.hızlı-randevu, .en-yakın-klinik, .istediğiniz-doktor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	flex-direction: column;
+    width: 35vh;
+    height: 53vh;
+    position: relative;
+	margin: 50px;
+}
+.logo-container{
+	position: relative;
+	margin-left: 40px;
+}
+.özellikler .yazılar{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 10px;
+	margin-left: 20px;
+}
+.özellikler .yazılar p{
+	text-transform: none; text-align: center;
+}
+.özellikler img{
+    height: 100px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.5s ease;
+}
+.özellikler .arka-plan{
+	height: 110px;
+    position: absolute;
+    z-index: 1;
+	margin-bottom: 160px;
+    transition: transform 0.5s ease;
+}
+.hızlı-randevu:hover img, 
+.en-yakın-klinik:hover img, 
+.istediğiniz-doktor:hover img {
+    transform: translate(-10%, -20%) scale(0.9);
+
+}
+.hızlı-randevu:hover .arka-plan, 
+.en-yakın-klinik:hover .arka-plan, 
+.istediğiniz-doktor:hover .arka-plan {
+    transform: translate(5%, 5%) scale(0.9);
+}
+.biz-kimiz{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #deecd7b7;
+	height: 300px;
+}
+.biz-kimiz h3{
+	font-size: 36px;
+	margin: 100px;
+	color:#8ba07e;
+}
+.kayan-yazı{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 770px;
+	height: 70px;
+	overflow: hidden;
+	position: relative;
+	background-color: #b7cbaaea;
+	border-radius: 10px;
+}
+.kayan-yazı span{
+	font-size: 18px;
+	position: absolute;
+	left: 4%;
+	top: 20%;
+	animation: animasyon 10s ease-in-out infinite;
+	transform: translateX(-50%) translateY(0);
+	opacity: 0;
+	text-align: center;
+}
+.kayan-yazı span:nth-child(2){
+	animation-delay: 3s;
+}
+.kayan-yazı span:nth-child(3){
+	animation-delay: 6s;
+}
+@keyframes animasyon {
+	0% {
+		transform: translateY(-100px);
+		opacity: 0;
+	}
+	5% {
+		transform: translateY(0px);
+		opacity: 1;
+	}
+	30% {
+		transform: translateY(0px);
+		opacity: 1;
+	}
+	40% {
+		transform: translateY(100px);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(100px);
+		opacity: 1;
+	}
+}
+.sosyal-medya{
+	display: flex;
+	height: 200px;
+	align-items: center;
+}
+.sosyal-medya h3{
+	margin: 30px;
+}
+.sosyal-medya img{
+	height: 50px; margin: 20px;
+}
+.mail{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100px;
+	background-color: #b4b4b4cb;
+	color: white;
+}
+.mail span{
+	text-transform: none; 
+	color: #54773d;
+	
+}
+.footer{
+	background-color: rgb(147, 147, 147);
+	display: flex;
+	height: 200px;
+}
+.footer .sol{
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	flex-direction: column;
+	margin: 50px;
+}
+.footer .sol a{
+	color: white;
+	margin: 10px;
+	margin-left: 20px;
+}
+.footer .sağ{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	margin-left: 300px;
+	margin-top: 40px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#searchVeteriner {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.veteriner-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.veteriner-item {
+    padding: 10px;
+    margin: 10px 0;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.veteriner-item:hover {
+    background-color: #f0f0f0;
+}
+
+.box{
+	display: flex;
+	flex-direction: column;
+	padding: 25px 25px;
+	border-radius: 20px;
+}
+.form-box{
+	width:450px;
+	margin-left: 150px;
+}
+.form-box header{
+	font-size: 25px;
+	font-weight: 600;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #e6e6e6;
+	margin-bottom: 10px;
+}
+.form-box form .field{
+	display: flex;
+	margin-bottom: 10px;
+	flex-direction: column;
+}
+.form-box form .input input{
+	height: 40px;
+	width: 100%;
+	font-size: 16px;
+	padding: 0 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	outline: none;
+}
+.btn{
+	height: 35px;
+	background-color: #7ba85a;
+	border: 0;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 15px;
+	cursor: pointer;
+	transition: all .3s;
+	margin-top: 10px;
+	padding:  0px 10px;
+}
+.btn:hover{
+	opacity: 0.82;
+}
+.submit{
+	width: 100%;
+}
+.links{
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
