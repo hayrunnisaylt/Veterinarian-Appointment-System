@@ -1,5 +1,11 @@
 {
     "name": "hayrunnisa/htdocs",
+    "config": {
+        "platform-check": false,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
     "require": {
         "mongodb/mongodb": "^1.20"
     },
