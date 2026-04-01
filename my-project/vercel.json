@@ -1,11 +1,11 @@
 {
+  "version": 2,
   "functions": {
-    "**/*.php": {
-      "runtime": "vercel-php@0.7.5"
-    }
+    "api/**/*.php": { "runtime": "vercel-php@0.7.5" },
+    "index/**/*.php": { "runtime": "vercel-php@0.7.5" },
+    "Randevu_al/**/*.php": { "runtime": "vercel-php@0.7.5" }
   },
   "routes": [
-    { "src": "/index", "dest": "/index/index.php" },
     { "src": "/(.*)", "dest": "/index/index.php" }
   ]
 }
