@@ -6,10 +6,10 @@
     }
   },
   "routes": [
-    { "src": "/", "dest": "api/home.php" },
-    { "src": "/giris", "dest": "api/giris.php" },
-    { "src": "/kayit_ol", "dest": "api/kayit_ol.php" },
-    { "src": "/(.*).php", "dest": "api/$1.php" },
-    { "src": "/(.*)", "dest": "api/$1.php" }
+    { "src": "/", "dest": "public/home.php" },
+    { "src": "/giris", "dest": "public/giris.php" },
+    { "src": "/kayit_ol", "dest": "public/kayit_ol.php" },
+    { "src": "/(.*).php", "dest": "public/$1.php" },
+    { "src": "/(.*)", "dest": "public/$1.php" }
   ]
 }
