@@ -7,9 +7,10 @@ $uri = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appNa
 
 try {
     $client = new MongoDB\Client($uri);
-    // Veritabanı adını Atlas'ta ne verdiysen onu yaz (Örn: veteriner_db)
+    // Veritabanı adını Atlas'takiyle aynı yap
     $db = $client->selectDatabase('veteriner_db'); 
 } catch (Exception $e) {
-    die("Bağlantı Hatası: " . $e->getMessage());
+    // Hata buradaki tırnaklardan kaynaklanıyor olabilir
+    die("Baglanti Hatasi: " . $e->getMessage());
 }
 ?>
