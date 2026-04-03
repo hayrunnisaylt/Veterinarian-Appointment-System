@@ -1,16 +1,19 @@
+# PHP ve Apache içeren resmi imajı kullan
 FROM php:8.2-apache
 
-# MongoDB sürücüsü ve gerekli bağımlılıklar
+# Gerekli sistem kütüphanelerini kur ve MongoDB sürücüsünü yükle
 RUN apt-get update && apt-get install -y \
     libssl-dev \
-    unzip \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-# Proje dosyalarını kopyala
+# Apache'nin rewrite modunu aç (URL yönlendirmeleri için)
+RUN a2enmod rewrite
+
+# Proje dosyalarını Docker içindeki web dizinine kopyala
 COPY . /var/www/html/
 
-# Port ayarı (Render'ın dinamik portu için)
+# Render'ın verdiği portu Apache'ye tanıt
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 # Apache'yi başlat
