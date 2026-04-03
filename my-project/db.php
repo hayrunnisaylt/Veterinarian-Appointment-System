@@ -5,8 +5,9 @@ require 'vendor/autoload.php';
 // Atlas'tan aldığın gerçek bağlantı linkini buraya yapıştır.
 $uri = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0;
 
-try {
-    $client = new MongoDB\Client($uri);
+
+$client = new MongoDB\Client($uri);
     // Veritabanı adını Atlas'takiyle aynı yap
-    $db = $client->selectDatabase('veteriner_db'); 
-} 
+$db = $client->selectDatabase('veteriner_db'); 
+
+?>
