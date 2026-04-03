@@ -7,7 +7,8 @@
         }
     },
     "require": {
-        "mongodb/mongodb": "1.16"
+        "php": "^8.0",
+        "mongodb/mongodb": "^1.12"
     },
     "authors": [
         {
@@ -15,4 +16,5 @@
             "email": "hayrunnisayoltan@gmail.com"
         }
     ]
+    
 }
