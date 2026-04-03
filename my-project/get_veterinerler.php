@@ -1,5 +1,5 @@
 <?php
-require '../vendor/autoload.php';
+require '/vendor/autoload.php';
 
 // MongoDB bağlantısını kurun
 $client = new MongoDB\Client("mongodb://localhost:27017");

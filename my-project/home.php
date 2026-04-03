@@ -42,7 +42,7 @@ $randevular = $randevuCollection->find();
             if (!$user) {
                 session_unset();
                 session_destroy();
-                header("Location: giris.php");
+                header("Location: login.php");
                 exit;
             }
             ?>

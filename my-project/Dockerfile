@@ -1,17 +1,19 @@
 FROM php:8.2-apache
 
-# MongoDB sürücüsünü kur
+# MongoDB sürücüsü kurulumu
 RUN apt-get update && apt-get install -y libssl-dev && \
     pecl install mongodb && \
     docker-php-ext-enable mongodb
 
-# Tüm dosyaları (home.php, db.php vb.) Apache'nin kök dizinine kopyala
+# Proje dosyalarını kopyala
 COPY . /var/www/html/
 
-# home.php dosyasını varsayılan ana sayfa yap
-RUN echo "DirectoryIndex home.php index.php" >> /etc/apache2/apache2.conf
+# KRİTİK: index/index.html dosyasını varsayılan giriş noktası yapıyoruz
+# Apache'ye önce index/index.html, sonra diğerlerini kontrol etmesini söylüyoruz
+RUN echo "DirectoryIndex İndex/index.html index.html home.php" > /etc/apache2/conf-available/docker-php.conf && \
+    a2enconf docker-php
 
-# Render port ayarı
+# Port ayarı (Render için)
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 # Yetkilendirme
