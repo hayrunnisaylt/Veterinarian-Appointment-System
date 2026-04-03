@@ -10,7 +10,7 @@ COPY . /var/www/html/
 
 # KRİTİK: index/index.html dosyasını varsayılan giriş noktası yapıyoruz
 # Apache'ye önce index/index.html, sonra diğerlerini kontrol etmesini söylüyoruz
-RUN echo "DirectoryIndex İndex/index.html index.html home.php" > /etc/apache2/conf-available/docker-php.conf && \
+RUN echo "DirectoryIndex index/index.html index.html home.php" > /etc/apache2/conf-available/docker-php.conf && \
     a2enconf docker-php
 
 # Port ayarı (Render için)
