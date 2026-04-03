@@ -20,3 +20,4 @@ RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/a
 RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 
 CMD ["apache2-foreground"]
+RUN chmod -R 755 /var/www/html
