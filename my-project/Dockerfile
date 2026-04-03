@@ -1,21 +1,24 @@
 FROM php:8.2-apache
 
-# MongoDB ve kütüphaneler
+# MongoDB ve gerekli kütüphaneler
 RUN apt-get update && apt-get install -y libssl-dev && \
     pecl install mongodb && \
     docker-php-ext-enable mongodb
 
-# Proje dosyalarını kopyala
+# Apache mod_rewrite'ı aktif et
+RUN a2enmod rewrite
+
+# Dosyaları kopyala
 COPY . /var/www/html/
 
-# home.php dosyasını varsayılan yap
-RUN echo "DirectoryIndex home.php" >> /etc/apache2/apache2.conf
+# KRİTİK AYAR: Apache'ye ana dosyanın api klasöründe olduğunu söyleyelim
+# Hem kök dizini hem de api klasörünü kontrol etmesini sağlıyoruz
+RUN echo "DirectoryIndex api/home.php home.php index.php" >> /etc/apache2/apache2.conf
 
-# KRİTİK: Apache'nin 80 yerine Render'ın verdiği $PORT'u dinlemesini sağla
-# Bu komut Apache konfigürasyonundaki 80 yazılarını Render'ın portuyla değiştirir
+# Port ayarı (Render için)
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-# Portu dışarıya aç (Render bunu otomatik yakalar)
-EXPOSE 80
+# Dosya izinlerini düzelt (403 hatasını önlemek için)
+RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 
 CMD ["apache2-foreground"]
