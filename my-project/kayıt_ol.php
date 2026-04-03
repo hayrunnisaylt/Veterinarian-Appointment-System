@@ -13,7 +13,7 @@
 				
 			require 'vendor/autoload.php';
 
-			$client = new MongoDB\Client("mongodb://localhost:27017");
+			$client = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0"
 			$db = $client->veteriner_randevu;
 			$usersCollection = $db->kullanicilar;
 			if ($_SERVER["REQUEST_METHOD"] == "POST") {
