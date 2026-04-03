@@ -32,12 +32,11 @@ use function array_column;
  *
  * @see \MongoDB\Client::listDatabaseNames()
  * @see https://mongodb.com/docs/manual/reference/command/listDatabases/#mongodb-dbcommand-dbcmd.listDatabases
- *
- * @final extending this class will not be supported in v2.0.0
  */
 class ListDatabaseNames implements Executable
 {
-    private ListDatabasesCommand $listDatabases;
+    /** @var ListDatabasesCommand */
+    private $listDatabases;
 
     /**
      * Constructs a listDatabases command.

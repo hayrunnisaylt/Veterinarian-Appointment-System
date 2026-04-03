@@ -21,8 +21,9 @@ use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use MongoDB\Driver\Server;
 use MongoDB\Exception\InvalidArgumentException;
 
+use function is_array;
+use function is_object;
 use function MongoDB\document_to_array;
-use function MongoDB\is_document;
 
 /**
  * Drop an encrypted collection.
@@ -39,10 +40,11 @@ use function MongoDB\is_document;
  */
 class DropEncryptedCollection implements Executable
 {
-    private DropCollection $dropCollection;
+    /** @var DropCollection */
+    private $dropCollection;
 
-    /** @var list<DropCollection> */
-    private array $dropMetadataCollections;
+    /** @var DropCollection[] */
+    private $dropMetadataCollections;
 
     /**
      * Constructs an operation to drop an encrypted collection and its related
@@ -66,8 +68,8 @@ class DropEncryptedCollection implements Executable
             throw new InvalidArgumentException('"encryptedFields" option is required');
         }
 
-        if (! is_document($options['encryptedFields'])) {
-            throw InvalidArgumentException::expectedDocumentType('"encryptedFields" option', $options['encryptedFields']);
+        if (! is_array($options['encryptedFields']) && ! is_object($options['encryptedFields'])) {
+            throw InvalidArgumentException::invalidType('"encryptedFields" option', $options['encryptedFields'], ['array', 'object']);
         }
 
         /** @psalm-var array{ecocCollection?: ?string, escCollection?: ?string} */

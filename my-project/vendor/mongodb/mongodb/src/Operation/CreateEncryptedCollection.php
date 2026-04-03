@@ -30,7 +30,6 @@ use function array_key_exists;
 use function is_array;
 use function is_object;
 use function MongoDB\document_to_array;
-use function MongoDB\is_document;
 use function MongoDB\server_supports_feature;
 
 /**
@@ -52,12 +51,23 @@ class CreateEncryptedCollection implements Executable
 {
     private const WIRE_VERSION_FOR_QUERYABLE_ENCRYPTION_V2 = 21;
 
-    private CreateCollection $createCollection;
+    /** @var CreateCollection */
+    private $createCollection;
 
-    /** @var list<CreateCollection> */
-    private array $createMetadataCollections;
+    /** @var CreateCollection[] */
+    private $createMetadataCollections;
 
-    private CreateIndexes $createSafeContentIndex;
+    /** @var CreateIndexes */
+    private $createSafeContentIndex;
+
+    /** @var string */
+    private $databaseName;
+
+    /** @var string */
+    private $collectionName;
+
+    /** @var array */
+    private $options;
 
     /**
      * @see CreateCollection::__construct() for supported options
@@ -66,20 +76,20 @@ class CreateEncryptedCollection implements Executable
      * @param array  $options        CreateCollection options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(private string $databaseName, private string $collectionName, private array $options)
+    public function __construct(string $databaseName, string $collectionName, array $options)
     {
-        if (! isset($this->options['encryptedFields'])) {
+        if (! isset($options['encryptedFields'])) {
             throw new InvalidArgumentException('"encryptedFields" option is required');
         }
 
-        if (! is_document($this->options['encryptedFields'])) {
-            throw InvalidArgumentException::expectedDocumentType('"encryptedFields" option', $this->options['encryptedFields']);
+        if (! is_array($options['encryptedFields']) && ! is_object($options['encryptedFields'])) {
+            throw InvalidArgumentException::invalidType('"encryptedFields" option', $options['encryptedFields'], ['array', 'object']);
         }
 
-        $this->createCollection = new CreateCollection($databaseName, $collectionName, $this->options);
+        $this->createCollection = new CreateCollection($databaseName, $collectionName, $options);
 
         /** @psalm-var array{ecocCollection?: ?string, escCollection?: ?string} */
-        $encryptedFields = document_to_array($this->options['encryptedFields']);
+        $encryptedFields = document_to_array($options['encryptedFields']);
         $enxcolOptions = ['clusteredIndex' => ['key' => ['_id' => 1], 'unique' => true]];
 
         $this->createMetadataCollections = [
@@ -88,6 +98,10 @@ class CreateEncryptedCollection implements Executable
         ];
 
         $this->createSafeContentIndex = new CreateIndexes($databaseName, $collectionName, [['key' => ['__safeContent__' => 1]]]);
+
+        $this->databaseName = $databaseName;
+        $this->collectionName = $collectionName;
+        $this->options = $options;
     }
 
     /**

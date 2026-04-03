@@ -17,8 +17,6 @@
 
 namespace MongoDB\Operation;
 
-use MongoDB\BSON\Document;
-use MongoDB\Codec\DocumentCodec;
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use MongoDB\Driver\Server;
@@ -29,7 +27,6 @@ use MongoDB\Exception\UnexpectedValueException;
 use MongoDB\Exception\UnsupportedException;
 
 use function array_key_exists;
-use function assert;
 use function current;
 use function is_array;
 use function is_bool;
@@ -37,7 +34,6 @@ use function is_integer;
 use function is_object;
 use function is_string;
 use function MongoDB\create_field_path_type_map;
-use function MongoDB\is_document;
 use function MongoDB\is_pipeline;
 use function MongoDB\is_write_concern_acknowledged;
 use function MongoDB\server_supports_feature;
@@ -57,7 +53,14 @@ class FindAndModify implements Executable, Explainable
 
     private const WIRE_VERSION_FOR_UNSUPPORTED_OPTION_SERVER_SIDE_ERROR = 8;
 
-    private array $options;
+    /** @var string */
+    private $databaseName;
+
+    /** @var string */
+    private $collectionName;
+
+    /** @var array */
+    private $options;
 
     /**
      * Constructs a findAndModify command.
@@ -66,9 +69,6 @@ class FindAndModify implements Executable, Explainable
      *
      *  * arrayFilters (document array): A set of filters specifying to which
      *    array elements an update should apply.
-     *
-     *  * codec (MongoDB\Codec\DocumentCodec): Codec used to decode documents
-     *    from BSON to PHP objects.
      *
      *  * collation (document): Collation specification.
      *
@@ -127,7 +127,7 @@ class FindAndModify implements Executable, Explainable
      * @param array  $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(private string $databaseName, private string $collectionName, array $options)
+    public function __construct(string $databaseName, string $collectionName, array $options)
     {
         $options += ['remove' => false];
 
@@ -139,20 +139,16 @@ class FindAndModify implements Executable, Explainable
             throw InvalidArgumentException::invalidType('"bypassDocumentValidation" option', $options['bypassDocumentValidation'], 'boolean');
         }
 
-        if (isset($options['codec']) && ! $options['codec'] instanceof DocumentCodec) {
-            throw InvalidArgumentException::invalidType('"codec" option', $options['codec'], DocumentCodec::class);
+        if (isset($options['collation']) && ! is_array($options['collation']) && ! is_object($options['collation'])) {
+            throw InvalidArgumentException::invalidType('"collation" option', $options['collation'], 'array or object');
         }
 
-        if (isset($options['collation']) && ! is_document($options['collation'])) {
-            throw InvalidArgumentException::expectedDocumentType('"collation" option', $options['collation']);
+        if (isset($options['fields']) && ! is_array($options['fields']) && ! is_object($options['fields'])) {
+            throw InvalidArgumentException::invalidType('"fields" option', $options['fields'], 'array or object');
         }
 
-        if (isset($options['fields']) && ! is_document($options['fields'])) {
-            throw InvalidArgumentException::expectedDocumentType('"fields" option', $options['fields']);
-        }
-
-        if (isset($options['hint']) && ! is_string($options['hint']) && ! is_document($options['hint'])) {
-            throw InvalidArgumentException::expectedDocumentOrStringType('"hint" option', $options['hint']);
+        if (isset($options['hint']) && ! is_string($options['hint']) && ! is_array($options['hint']) && ! is_object($options['hint'])) {
+            throw InvalidArgumentException::invalidType('"hint" option', $options['hint'], ['string', 'array', 'object']);
         }
 
         if (isset($options['maxTimeMS']) && ! is_integer($options['maxTimeMS'])) {
@@ -163,8 +159,8 @@ class FindAndModify implements Executable, Explainable
             throw InvalidArgumentException::invalidType('"new" option', $options['new'], 'boolean');
         }
 
-        if (isset($options['query']) && ! is_document($options['query'])) {
-            throw InvalidArgumentException::expectedDocumentType('"query" option', $options['query']);
+        if (isset($options['query']) && ! is_array($options['query']) && ! is_object($options['query'])) {
+            throw InvalidArgumentException::invalidType('"query" option', $options['query'], 'array or object');
         }
 
         if (! is_bool($options['remove'])) {
@@ -175,8 +171,8 @@ class FindAndModify implements Executable, Explainable
             throw InvalidArgumentException::invalidType('"session" option', $options['session'], Session::class);
         }
 
-        if (isset($options['sort']) && ! is_document($options['sort'])) {
-            throw InvalidArgumentException::expectedDocumentType('"sort" option', $options['sort']);
+        if (isset($options['sort']) && ! is_array($options['sort']) && ! is_object($options['sort'])) {
+            throw InvalidArgumentException::invalidType('"sort" option', $options['sort'], 'array or object');
         }
 
         if (isset($options['typeMap']) && ! is_array($options['typeMap'])) {
@@ -195,8 +191,8 @@ class FindAndModify implements Executable, Explainable
             throw InvalidArgumentException::invalidType('"upsert" option', $options['upsert'], 'boolean');
         }
 
-        if (isset($options['let']) && ! is_document($options['let'])) {
-            throw InvalidArgumentException::expectedDocumentType('"let" option', $options['let']);
+        if (isset($options['let']) && ! is_array($options['let']) && ! is_object($options['let'])) {
+            throw InvalidArgumentException::invalidType('"let" option', $options['let'], 'array or object');
         }
 
         if (isset($options['bypassDocumentValidation']) && ! $options['bypassDocumentValidation']) {
@@ -211,10 +207,8 @@ class FindAndModify implements Executable, Explainable
             unset($options['writeConcern']);
         }
 
-        if (isset($options['codec']) && isset($options['typeMap'])) {
-            throw InvalidArgumentException::cannotCombineCodecAndTypeMap();
-        }
-
+        $this->databaseName = $databaseName;
+        $this->collectionName = $collectionName;
         $this->options = $options;
     }
 
@@ -250,16 +244,6 @@ class FindAndModify implements Executable, Explainable
         }
 
         $cursor = $server->executeWriteCommand($this->databaseName, new Command($this->createCommandDocument()), $this->createOptions());
-
-        if (isset($this->options['codec'])) {
-            $cursor->setTypeMap(['root' => 'bson']);
-            $result = current($cursor->toArray());
-            assert($result instanceof Document);
-
-            $value = $result->get('value');
-
-            return $value === null ? $value : $this->options['codec']->decode($value);
-        }
 
         if (isset($this->options['typeMap'])) {
             $cursor->setTypeMap(create_field_path_type_map($this->options['typeMap'], 'value'));

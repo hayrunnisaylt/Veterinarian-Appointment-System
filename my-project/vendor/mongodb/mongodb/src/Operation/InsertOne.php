@@ -17,7 +17,6 @@
 
 namespace MongoDB\Operation;
 
-use MongoDB\Codec\DocumentCodec;
 use MongoDB\Driver\BulkWrite as Bulk;
 use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use MongoDB\Driver\Server;
@@ -27,20 +26,29 @@ use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\UnsupportedException;
 use MongoDB\InsertOneResult;
 
+use function is_array;
 use function is_bool;
-use function MongoDB\is_document;
+use function is_object;
 
 /**
  * Operation for inserting a single document with the insert command.
  *
  * @see \MongoDB\Collection::insertOne()
  * @see https://mongodb.com/docs/manual/reference/command/insert/
- *
- * @final extending this class will not be supported in v2.0.0
  */
 class InsertOne implements Executable
 {
-    private array|object $document;
+    /** @var string */
+    private $databaseName;
+
+    /** @var string */
+    private $collectionName;
+
+    /** @var array|object */
+    private $document;
+
+    /** @var array */
+    private $options;
 
     /**
      * Constructs an insert command.
@@ -49,9 +57,6 @@ class InsertOne implements Executable
      *
      *  * bypassDocumentValidation (boolean): If true, allows the write to
      *    circumvent document level validation.
-     *
-     *  * codec (MongoDB\Codec\DocumentCodec): Codec used to encode PHP objects
-     *    into BSON.
      *
      *  * comment (mixed): BSON value to attach as a comment to this command.
      *
@@ -67,33 +72,36 @@ class InsertOne implements Executable
      * @param array        $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(private string $databaseName, private string $collectionName, array|object $document, private array $options = [])
+    public function __construct(string $databaseName, string $collectionName, $document, array $options = [])
     {
-        if (isset($this->options['bypassDocumentValidation']) && ! is_bool($this->options['bypassDocumentValidation'])) {
-            throw InvalidArgumentException::invalidType('"bypassDocumentValidation" option', $this->options['bypassDocumentValidation'], 'boolean');
+        if (! is_array($document) && ! is_object($document)) {
+            throw InvalidArgumentException::invalidType('$document', $document, 'array or object');
         }
 
-        if (isset($this->options['codec']) && ! $this->options['codec'] instanceof DocumentCodec) {
-            throw InvalidArgumentException::invalidType('"codec" option', $this->options['codec'], DocumentCodec::class);
+        if (isset($options['bypassDocumentValidation']) && ! is_bool($options['bypassDocumentValidation'])) {
+            throw InvalidArgumentException::invalidType('"bypassDocumentValidation" option', $options['bypassDocumentValidation'], 'boolean');
         }
 
-        if (isset($this->options['session']) && ! $this->options['session'] instanceof Session) {
-            throw InvalidArgumentException::invalidType('"session" option', $this->options['session'], Session::class);
+        if (isset($options['session']) && ! $options['session'] instanceof Session) {
+            throw InvalidArgumentException::invalidType('"session" option', $options['session'], Session::class);
         }
 
-        if (isset($this->options['writeConcern']) && ! $this->options['writeConcern'] instanceof WriteConcern) {
-            throw InvalidArgumentException::invalidType('"writeConcern" option', $this->options['writeConcern'], WriteConcern::class);
+        if (isset($options['writeConcern']) && ! $options['writeConcern'] instanceof WriteConcern) {
+            throw InvalidArgumentException::invalidType('"writeConcern" option', $options['writeConcern'], WriteConcern::class);
         }
 
-        if (isset($this->options['bypassDocumentValidation']) && ! $this->options['bypassDocumentValidation']) {
-            unset($this->options['bypassDocumentValidation']);
+        if (isset($options['bypassDocumentValidation']) && ! $options['bypassDocumentValidation']) {
+            unset($options['bypassDocumentValidation']);
         }
 
-        if (isset($this->options['writeConcern']) && $this->options['writeConcern']->isDefault()) {
-            unset($this->options['writeConcern']);
+        if (isset($options['writeConcern']) && $options['writeConcern']->isDefault()) {
+            unset($options['writeConcern']);
         }
 
-        $this->document = $this->validateDocument($document, $this->options['codec'] ?? null);
+        $this->databaseName = $databaseName;
+        $this->collectionName = $collectionName;
+        $this->document = $document;
+        $this->options = $options;
     }
 
     /**
@@ -112,7 +120,6 @@ class InsertOne implements Executable
         }
 
         $bulk = new Bulk($this->createBulkWriteOptions());
-
         $insertedId = $bulk->insert($this->document);
 
         $writeResult = $server->executeBulkWrite($this->databaseName . '.' . $this->collectionName, $bulk, $this->createExecuteOptions());
@@ -156,19 +163,5 @@ class InsertOne implements Executable
         }
 
         return $options;
-    }
-
-    /** @return array|object */
-    private function validateDocument(array|object $document, ?DocumentCodec $codec)
-    {
-        if ($codec) {
-            $document = $codec->encode($document);
-        }
-
-        if (! is_document($document)) {
-            throw InvalidArgumentException::expectedDocumentType('$document', $document);
-        }
-
-        return $document;
     }
 }

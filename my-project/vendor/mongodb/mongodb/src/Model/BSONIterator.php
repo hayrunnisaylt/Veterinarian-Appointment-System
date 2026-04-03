@@ -18,14 +18,12 @@
 namespace MongoDB\Model;
 
 use Iterator;
-use MongoDB\BSON\Document;
 use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\UnexpectedValueException;
 use ReturnTypeWillChange;
 
-use function assert;
 use function is_array;
-use function is_int;
+use function MongoDB\BSON\toPHP;
 use function sprintf;
 use function strlen;
 use function substr;
@@ -33,22 +31,56 @@ use function unpack;
 
 /**
  * Iterator for BSON documents.
- *
- * @template-implements Iterator<int, mixed>
  */
 class BSONIterator implements Iterator
 {
     private const BSON_SIZE = 4;
 
-    private string $buffer;
+    /** @var string */
+    private $buffer;
 
-    private int $bufferLength;
+    /** @var integer */
+    private $bufferLength;
 
-    private array|object|null $current = null;
+    /** @var mixed */
+    private $current;
 
-    private int $key = 0;
+    /** @var integer */
+    private $key = 0;
 
-    private int $position = 0;
+    /** @var integer */
+    private $position = 0;
+
+    /** @var array */
+    private $options;
+
+    /**
+     * Constructs a BSON Iterator.
+     *
+     * Supported options:
+     *
+     *  * typeMap (array): Type map for BSON deserialization.
+     *
+     * @internal
+     * @see https://php.net/manual/en/function.mongodb.bson-tophp.php
+     * @param string $data    Concatenated, valid, BSON-encoded documents
+     * @param array  $options Iterator options
+     * @throws InvalidArgumentException for parameter/option parsing errors
+     */
+    public function __construct(string $data, array $options = [])
+    {
+        if (isset($options['typeMap']) && ! is_array($options['typeMap'])) {
+            throw InvalidArgumentException::invalidType('"typeMap" option', $options['typeMap'], 'array');
+        }
+
+        if (! isset($options['typeMap'])) {
+            $options['typeMap'] = [];
+        }
+
+        $this->buffer = $data;
+        $this->bufferLength = strlen($data);
+        $this->options = $options;
+    }
 
     /**
      * @see https://php.net/iterator.current
@@ -62,7 +94,7 @@ class BSONIterator implements Iterator
 
     /**
      * @see https://php.net/iterator.key
-     * @return int
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function key()
@@ -102,33 +134,6 @@ class BSONIterator implements Iterator
         return $this->current !== null;
     }
 
-    /**
-     * Constructs a BSON Iterator.
-     *
-     * Supported options:
-     *
-     *  * typeMap (array): Type map for BSON deserialization.
-     *
-     * @internal
-     * @see https://php.net/manual/en/function.mongodb.bson-tophp.php
-     * @param string $data    Concatenated, valid, BSON-encoded documents
-     * @param array  $options Iterator options
-     * @throws InvalidArgumentException for parameter/option parsing errors
-     */
-    public function __construct(string $data, private array $options = [])
-    {
-        if (isset($options['typeMap']) && ! is_array($options['typeMap'])) {
-            throw InvalidArgumentException::invalidType('"typeMap" option', $options['typeMap'], 'array');
-        }
-
-        if (! isset($options['typeMap'])) {
-            $this->options['typeMap'] = [];
-        }
-
-        $this->buffer = $data;
-        $this->bufferLength = strlen($data);
-    }
-
     private function advance(): void
     {
         if ($this->position === $this->bufferLength) {
@@ -140,13 +145,12 @@ class BSONIterator implements Iterator
         }
 
         [, $documentLength] = unpack('V', substr($this->buffer, $this->position, self::BSON_SIZE));
-        assert(is_int($documentLength));
 
         if ($this->bufferLength - $this->position < $documentLength) {
             throw new UnexpectedValueException(sprintf('Expected %d bytes; %d remaining', $documentLength, $this->bufferLength - $this->position));
         }
 
-        $this->current = Document::fromBSON(substr($this->buffer, $this->position, $documentLength))->toPHP($this->options['typeMap']);
+        $this->current = toPHP(substr($this->buffer, $this->position, $documentLength), $this->options['typeMap']);
         $this->position += $documentLength;
     }
 }

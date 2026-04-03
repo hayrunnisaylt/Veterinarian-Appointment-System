@@ -31,8 +31,6 @@ use function MongoDB\recursive_copy;
  *
  * The internal data will be filtered through array_values() during BSON
  * serialization to ensure that it becomes a BSON array.
- *
- * @template-extends ArrayObject<int, mixed>
  */
 class BSONArray extends ArrayObject implements JsonSerializable, Serializable, Unserializable
 {
@@ -55,7 +53,7 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      */
     public static function __set_state(array $properties)
     {
-        $array = new self();
+        $array = new static();
         $array->exchangeArray($properties);
 
         return $array;
@@ -80,12 +78,12 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      * Unserialize the document to BSON.
      *
      * @see https://php.net/mongodb-bson-unserializable.bsonunserialize
-     * @param array<int, mixed> $data Array data
+     * @param array $data Array data
      */
     #[ReturnTypeWillChange]
     public function bsonUnserialize(array $data)
     {
-        parent::__construct($data);
+        self::__construct($data);
     }
 
     /**

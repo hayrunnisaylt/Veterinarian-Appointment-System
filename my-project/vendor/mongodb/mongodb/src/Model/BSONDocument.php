@@ -17,13 +17,11 @@
 
 namespace MongoDB\Model;
 
-use ArrayIterator;
 use ArrayObject;
 use JsonSerializable;
 use MongoDB\BSON\Serializable;
 use MongoDB\BSON\Unserializable;
 use ReturnTypeWillChange;
-use stdClass;
 
 use function MongoDB\recursive_copy;
 
@@ -32,8 +30,6 @@ use function MongoDB\recursive_copy;
  *
  * The internal data will be cast to an object during BSON serialization to
  * ensure that it becomes a BSON document.
- *
- * @template-extends ArrayObject<string, mixed>
  */
 class BSONDocument extends ArrayObject implements JsonSerializable, Serializable, Unserializable
 {
@@ -52,10 +48,8 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      * by default.
      *
      * @see https://php.net/arrayobject.construct
-     * @param array<string, mixed>|stdClass $input
-     * @psalm-param class-string<ArrayIterator<string,mixed>>|class-string<ArrayObject<string,mixed>> $iteratorClass
      */
-    public function __construct(array|stdClass $input = [], int $flags = ArrayObject::ARRAY_AS_PROPS, string $iteratorClass = ArrayIterator::class)
+    public function __construct(array $input = [], int $flags = ArrayObject::ARRAY_AS_PROPS, string $iteratorClass = 'ArrayIterator')
     {
         parent::__construct($input, $flags, $iteratorClass);
     }
@@ -69,7 +63,7 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      */
     public static function __set_state(array $properties)
     {
-        $document = new self();
+        $document = new static();
         $document->exchangeArray($properties);
 
         return $document;
@@ -79,7 +73,7 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      * Serialize the document to BSON.
      *
      * @see https://php.net/mongodb-bson-serializable.bsonserialize
-     * @return stdClass
+     * @return object
      */
     #[ReturnTypeWillChange]
     public function bsonSerialize()
@@ -91,7 +85,7 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      * Unserialize the document to BSON.
      *
      * @see https://php.net/mongodb-bson-unserializable.bsonunserialize
-     * @param array<string, mixed> $data Array data
+     * @param array $data Array data
      */
     #[ReturnTypeWillChange]
     public function bsonUnserialize(array $data)
