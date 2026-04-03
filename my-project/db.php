@@ -9,8 +9,4 @@ try {
     $client = new MongoDB\Client($uri);
     // Veritabanı adını Atlas'takiyle aynı yap
     $db = $client->selectDatabase('veteriner_db'); 
-} catch (Exception $e) {
-    // Hata buradaki tırnaklardan kaynaklanıyor olabilir
-    die("Baglanti Hatasi: " . $e->getMessage());
-}
-?>
+} 
