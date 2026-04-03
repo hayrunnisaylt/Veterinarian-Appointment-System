@@ -71,7 +71,7 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      * @return array
      */
     #[ReturnTypeWillChange]
-    public function bsonSerialize()
+    public function bsonSerialize(): mixed  // BURAYA EKLEDİK
     {
         return array_values($this->getArrayCopy());
     }
@@ -83,7 +83,7 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      * @param array<int, mixed> $data Array data
      */
     #[ReturnTypeWillChange]
-    public function bsonUnserialize(array $data)
+    public function bsonUnserialize(array $data): void // BURAYA void EKLEDİK (çünkü bir şey döndürmez)
     {
         parent::__construct($data);
     }
