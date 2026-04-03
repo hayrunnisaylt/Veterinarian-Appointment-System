@@ -13,8 +13,9 @@
 				
 			require 'vendor/autoload.php';
 
-			$client = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0"
-			$db = $client->veteriner_randevu;
+			$clientUri = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0"; // NOKTALI VİRGÜL EKLENDİ
+			$manager = new MongoDB\Client($clientUri); // Client nesnesini oluşturman lazım
+			$db = $manager->veteriner_randevu;
 			$usersCollection = $db->kullanicilar;
 			if ($_SERVER["REQUEST_METHOD"] == "POST") {
     			$adSoyad = $_POST['kullanıcı-adı'];
