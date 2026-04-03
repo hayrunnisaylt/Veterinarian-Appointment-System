@@ -5,20 +5,20 @@ RUN apt-get update && apt-get install -y libssl-dev && \
     pecl install mongodb && \
     docker-php-ext-enable mongodb
 
-# Apache mod_rewrite'ı aktif et
-RUN a2enmod rewrite
-
-# Dosyaları kopyala
+# 1. Dosyaları kopyala
 COPY . /var/www/html/
 
-# KRİTİK AYAR: Apache'ye ana dosyanın api klasöründe olduğunu söyleyelim
-# Hem kök dizini hem de api klasörünü kontrol etmesini sağlıyoruz
-RUN echo "DirectoryIndex api/home.php home.php index.php" >> /etc/apache2/apache2.conf
+# 2. KRİTİK: api klasörünün içindeki her şeyi bir üst dizine (html) taşı
+# Böylece home.php direkt /var/www/html/home.php olacak
+RUN cp -r /var/www/html/api/* /var/www/html/ || true
 
-# Port ayarı (Render için)
+# 3. Giriş dosyasını tanımla
+RUN echo "DirectoryIndex home.php index.php" >> /etc/apache2/apache2.conf
+
+# 4. Port ayarı (Render için)
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-# Dosya izinlerini düzelt (403 hatasını önlemek için)
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+# 5. İzinleri en geniş yetkiyle güncelle (403'ü bitirmek için)
+RUN chmod -R 777 /var/www/html
 
 CMD ["apache2-foreground"]
