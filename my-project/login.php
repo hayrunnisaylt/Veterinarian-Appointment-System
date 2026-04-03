@@ -1,63 +1,50 @@
 <?php
+ob_start();
 session_start();
+include 'db.php';
 
-if (isset($_SESSION['user_id'])) {
-    echo "Kullanıcı zaten giriş yapmış: " . $_SESSION['user_email'];
-    header("Location: home.php");
-    exit;
+$usersCollection = $db->kullanicilar; 
+$error_message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
+    $kullanici_adi = trim($_POST['kullanıcı-adı']);
+    $sifre = trim($_POST['sifre']);
+
+    $user = $usersCollection->findOne(['adSoyad' => $kullanici_adi]);
+
+    if ($user) {
+        // DİKKAT: password_verify'ı SİLDİK, direkt karşılaştırıyoruz
+        if ($sifre === $user['sifre']) { 
+            $_SESSION['user_id'] = (string) $user['_id']; 
+            $_SESSION['username'] = $user['adSoyad'];
+            header("Location: home.php");
+            exit;
+        } else {
+            $error_message = "X HATA: Şifre eşleşmedi! DB'deki veri: " . $user['sifre'] . " | Senin girdiğin: " . $sifre;
+        }
+    } else {
+        $error_message = "X HATA: Kullanıcı bulunamadı!";
+    }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>VTR | Randevu Al</title>
-	<link rel="stylesheet" href="Randevu_al\randevu_al.css">
+    <meta charset="UTF-8">
+    <title>VTR | Giriş Testi</title>
+    <link rel="stylesheet" href="Randevu_al/randevu_al.css">
 </head>
 <body>
-	<div class="container">
-		<div class="box form-box">
-		<?php
-		include 'db.php';
-		if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    		$kullanici_adi = $_POST['kullanıcı-adı'];
-    		$sifre = $_POST['sifre'];
-   			$user = $usersCollection->findOne(['adSoyad' => $kullanici_adi]);
-
-		    if ($user && password_verify( $sifre,$user['sifre'])) {
-        		$_SESSION['user_id'] = (string) $user['_id']; 
-        		$_SESSION['user_email'] = $user['email'];
-        		header("Location: home.php");
-        		exit;
-			} else {
-        		echo "<div class='message'>
-						<p>Geçersiz email veya şifre!</p>
-					  </div> <br>";
-				echo "<a href='giris.php'><button class='btn'>Geri Dön</button></a>";
-    		}
-		}else{
-		?>
-
-			<header>Giriş Yap</header>
-			<form action="" method="post">
-				<div class="fiead input">
-					<label for="kullanıcı-adı">Kullanıcı Ad - Soyad</label>
-					<input type="text" name="kullanıcı-adı" id="kullanıcı-adı" required>
-				</div>
-				<div class="fiead input">
-					<label for="sifre">Şifre</label>
-					<input type="password" name="sifre" id="sifre" required>
-				</div>
-				<div class="fiead input">
-					<input type="submit" class="btn" name="submit" id="submit" value="Giriş" required>
-				</div>
-				<div class="links">
-					Hesabınız yok mu? <a href="kayıt_ol.php">Kayıt Ol</a>
-				</div>
-			</form>
-		</div>
-		<?php } ?> 
-	</div>
+    <div class="container">
+        <div class="box form-box">
+            <header>Giriş Yap (Test Modu)</header>
+            <?php if ($error_message) echo "<p style='color:red'>$error_message</p>"; ?>
+            <form action="" method="post">
+                <div class="input"><label>Ad Soyad</label><input type="text" name="kullanıcı-adı" required></div>
+                <div class="input"><label>Şifre</label><input type="password" name="sifre" required></div>
+                <input type="submit" name="submit" class="btn" value="Giriş">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

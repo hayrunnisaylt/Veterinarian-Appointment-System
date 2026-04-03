@@ -5,5 +5,7 @@ $uri = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appNa
 
 $client = new MongoDB\Client($uri);
 
-$db = $client->selectDatabase('veteriner_db');
+$db = $client->selectDatabase('veteriner_randevu');
+$usersCollection = $db->kullanicilar;
+$randevuCollection = $db->randevular;
 ?>
