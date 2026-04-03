@@ -1,28 +1,20 @@
 <?php
 require 'vendor/autoload.php';
 
-$client = new MongoDB\Client(uri: "mongodb://localhost:27017");
+// Render'a eklediğin Environment Variable'ı oku (En güvenli yöntem)
+$mongoUri = getenv('MANGO_DB');
+
+// Eğer Environment Variable yoksa (Local test için) manuel linkini buraya koyabilirsin
+// Ama Render'da mutlaka ENV kullanmalısın!
+if (!$mongoUri) {
+    $mongoUri = "mongodb+srv://dbHayrunnisa:1277Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0";
+}
 
 try {
-	$db = $client->veteriner_randevu;
-    $usersCollection = $db->kullanicilar;
-    $resultsCollection = $db->lab_sonuclari;
-	$randevuCollection = $db->mevcut_randevular;
-	$randevularCollection = $db->alınan_randevular;
-
-	/*$newRandevu = [
-		'tarih' => '2025-01-17',
-		'saat' => '10:00',
-		'doktor' => 'Dr. Nisa Sevinç',
-		'klinik' => 'Küçük Dostlar Merkezi',
-		'durum' => 'mevcut'
-	];
-	
-	// Koleksiyona ekleyin
-	$result = $randevuCollection->insertOne($newRandevu);*/
-
+    $client = new MongoDB\Client($mongoUri);
+    // Veritabanı adını Atlas'taki adıyla eşleştir (Örn: veteriner_db)
+    $db = $client->selectDatabase('veteriner_db'); 
 } catch (Exception $e) {
-    echo "MongoDB bağlantısı hatası: " . $e->getMessage();
-    exit;
+    die("Veritabanı bağlantı hatası: " . $e->getMessage());
 }
 ?>
