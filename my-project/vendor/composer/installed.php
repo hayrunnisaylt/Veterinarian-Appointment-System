@@ -3,7 +3,7 @@
         'name' => 'hayrunnisa/htdocs',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '9cd40dca6d631a0b104acee3985b613f103de91b',
+        'reference' => 'd585c3212ff476d576f33eaba65ed8144ec29c4a',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'hayrunnisa/htdocs' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9cd40dca6d631a0b104acee3985b613f103de91b',
+            'reference' => 'd585c3212ff476d576f33eaba65ed8144ec29c4a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
