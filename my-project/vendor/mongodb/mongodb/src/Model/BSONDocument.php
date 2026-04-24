@@ -94,9 +94,9 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      * @param array<string, mixed> $data Array data
      */
     #[ReturnTypeWillChange]
-    public function bsonUnserialize(array $data)
+    public function bsonUnserialize(array $data): void
     {
-        parent::__construct($data, ArrayObject::ARRAY_AS_PROPS);
+        $this->exchangeArray($data);
     }
 
     /**
