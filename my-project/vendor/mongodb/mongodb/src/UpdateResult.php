@@ -25,15 +25,10 @@ use MongoDB\Exception\BadMethodCallException;
  */
 class UpdateResult
 {
-    /** @var WriteResult */
-    private $writeResult;
+    private bool $isAcknowledged;
 
-    /** @var boolean */
-    private $isAcknowledged;
-
-    public function __construct(WriteResult $writeResult)
+    public function __construct(private WriteResult $writeResult)
     {
-        $this->writeResult = $writeResult;
         $this->isAcknowledged = $writeResult->isAcknowledged();
     }
 

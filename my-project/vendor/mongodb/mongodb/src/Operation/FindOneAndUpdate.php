@@ -23,9 +23,7 @@ use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\UnsupportedException;
 
 use function array_key_exists;
-use function is_array;
 use function is_integer;
-use function is_object;
 use function MongoDB\is_document;
 use function MongoDB\is_first_key_operator;
 use function MongoDB\is_pipeline;
@@ -35,14 +33,15 @@ use function MongoDB\is_pipeline;
  *
  * @see \MongoDB\Collection::findOneAndUpdate()
  * @see https://mongodb.com/docs/manual/reference/command/findAndModify/
+ *
+ * @final extending this class will not be supported in v2.0.0
  */
 class FindOneAndUpdate implements Executable, Explainable
 {
     public const RETURN_DOCUMENT_BEFORE = 1;
     public const RETURN_DOCUMENT_AFTER = 2;
 
-    /** @var FindAndModify */
-    private $findAndModify;
+    private FindAndModify $findAndModify;
 
     /**
      * Constructs a findAndModify command for updating a document.
@@ -54,6 +53,9 @@ class FindOneAndUpdate implements Executable, Explainable
      *
      *  * bypassDocumentValidation (boolean): If true, allows the write to
      *    circumvent document level validation.
+     *
+     *  * codec (MongoDB\Codec\DocumentCodec): Codec used to decode documents
+     *    from BSON to PHP objects.
      *
      *  * collation (document): Collation specification.
      *
@@ -104,14 +106,10 @@ class FindOneAndUpdate implements Executable, Explainable
      * @param array        $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(string $databaseName, string $collectionName, $filter, $update, array $options = [])
+    public function __construct(string $databaseName, string $collectionName, array|object $filter, array|object $update, array $options = [])
     {
         if (! is_document($filter)) {
             throw InvalidArgumentException::expectedDocumentType('$filter', $filter);
-        }
-
-        if (! is_array($update) && ! is_object($update)) {
-            throw InvalidArgumentException::invalidType('$update', $update, 'array or object');
         }
 
         if (! is_first_key_operator($update) && ! is_pipeline($update)) {
@@ -147,7 +145,7 @@ class FindOneAndUpdate implements Executable, Explainable
         $this->findAndModify = new FindAndModify(
             $databaseName,
             $collectionName,
-            ['query' => $filter, 'update' => $update] + $options
+            ['query' => $filter, 'update' => $update] + $options,
         );
     }
 

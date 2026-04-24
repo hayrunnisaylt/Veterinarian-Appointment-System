@@ -46,32 +46,21 @@ class WritableStream
 {
     private const DEFAULT_CHUNK_SIZE_BYTES = 261120;
 
-    /** @var string */
-    private $buffer = '';
+    private string $buffer = '';
 
-    /** @var integer */
-    private $chunkOffset = 0;
+    private int $chunkOffset = 0;
 
-    /** @var integer */
-    private $chunkSize;
+    private int $chunkSize;
 
-    /** @var boolean */
-    private $disableMD5;
+    private bool $disableMD5;
 
-    /** @var CollectionWrapper */
-    private $collectionWrapper;
+    private array $file;
 
-    /** @var array */
-    private $file;
+    private ?HashContext $hashCtx = null;
 
-    /** @var HashContext|null */
-    private $hashCtx;
+    private bool $isClosed = false;
 
-    /** @var boolean */
-    private $isClosed = false;
-
-    /** @var integer */
-    private $length = 0;
+    private int $length = 0;
 
     /**
      * Constructs a writable GridFS stream.
@@ -101,7 +90,7 @@ class WritableStream
      * @param array             $options           Upload options
      * @throws InvalidArgumentException
      */
-    public function __construct(CollectionWrapper $collectionWrapper, string $filename, array $options = [])
+    public function __construct(private CollectionWrapper $collectionWrapper, string $filename, array $options = [])
     {
         $options += [
             '_id' => new ObjectId(),
@@ -134,7 +123,6 @@ class WritableStream
         }
 
         $this->chunkSize = $options['chunkSizeBytes'];
-        $this->collectionWrapper = $collectionWrapper;
         $this->disableMD5 = $options['disableMD5'];
 
         if (! $this->disableMD5) {
@@ -145,6 +133,8 @@ class WritableStream
             '_id' => $options['_id'],
             'chunkSize' => $this->chunkSize,
             'filename' => $filename,
+            'length' => null,
+            'uploadDate' => null,
         ] + array_intersect_key($options, ['aliases' => 1, 'contentType' => 1, 'metadata' => 1]);
     }
 
@@ -246,7 +236,7 @@ class WritableStream
     {
         try {
             $this->collectionWrapper->deleteChunksByFilesId($this->file['_id']);
-        } catch (DriverRuntimeException $e) {
+        } catch (DriverRuntimeException) {
             // We are already handling an error if abort() is called, so suppress this
         }
 
@@ -283,7 +273,7 @@ class WritableStream
         $chunk = [
             'files_id' => $this->file['_id'],
             'n' => $this->chunkOffset,
-            'data' => new Binary($data, Binary::TYPE_GENERIC),
+            'data' => new Binary($data),
         ];
 
         if (! $this->disableMD5 && $this->hashCtx) {

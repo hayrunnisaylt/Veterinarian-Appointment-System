@@ -40,22 +40,15 @@ use function sprintf;
  * @see \MongoDB\Collection::createIndex()
  * @see \MongoDB\Collection::createIndexes()
  * @see https://mongodb.com/docs/manual/reference/command/createIndexes/
+ *
+ * @final extending this class will not be supported in v2.0.0
  */
 class CreateIndexes implements Executable
 {
     private const WIRE_VERSION_FOR_COMMIT_QUORUM = 9;
 
-    /** @var string */
-    private $databaseName;
-
-    /** @var string */
-    private $collectionName;
-
-    /** @var array */
-    private $indexes = [];
-
-    /** @var array */
-    private $options = [];
+    /** @var list<IndexInput> */
+    private array $indexes = [];
 
     /**
      * Constructs a createIndexes command.
@@ -83,7 +76,7 @@ class CreateIndexes implements Executable
      * @param array   $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(string $databaseName, string $collectionName, array $indexes, array $options = [])
+    public function __construct(private string $databaseName, private string $collectionName, array $indexes, private array $options = [])
     {
         if (empty($indexes)) {
             throw new InvalidArgumentException('$indexes is empty');
@@ -101,29 +94,25 @@ class CreateIndexes implements Executable
             $this->indexes[] = new IndexInput($index);
         }
 
-        if (isset($options['commitQuorum']) && ! is_string($options['commitQuorum']) && ! is_integer($options['commitQuorum'])) {
-            throw InvalidArgumentException::invalidType('"commitQuorum" option', $options['commitQuorum'], ['integer', 'string']);
+        if (isset($this->options['commitQuorum']) && ! is_string($this->options['commitQuorum']) && ! is_integer($this->options['commitQuorum'])) {
+            throw InvalidArgumentException::invalidType('"commitQuorum" option', $this->options['commitQuorum'], ['integer', 'string']);
         }
 
-        if (isset($options['maxTimeMS']) && ! is_integer($options['maxTimeMS'])) {
-            throw InvalidArgumentException::invalidType('"maxTimeMS" option', $options['maxTimeMS'], 'integer');
+        if (isset($this->options['maxTimeMS']) && ! is_integer($this->options['maxTimeMS'])) {
+            throw InvalidArgumentException::invalidType('"maxTimeMS" option', $this->options['maxTimeMS'], 'integer');
         }
 
-        if (isset($options['session']) && ! $options['session'] instanceof Session) {
-            throw InvalidArgumentException::invalidType('"session" option', $options['session'], Session::class);
+        if (isset($this->options['session']) && ! $this->options['session'] instanceof Session) {
+            throw InvalidArgumentException::invalidType('"session" option', $this->options['session'], Session::class);
         }
 
-        if (isset($options['writeConcern']) && ! $options['writeConcern'] instanceof WriteConcern) {
-            throw InvalidArgumentException::invalidType('"writeConcern" option', $options['writeConcern'], WriteConcern::class);
+        if (isset($this->options['writeConcern']) && ! $this->options['writeConcern'] instanceof WriteConcern) {
+            throw InvalidArgumentException::invalidType('"writeConcern" option', $this->options['writeConcern'], WriteConcern::class);
         }
 
-        if (isset($options['writeConcern']) && $options['writeConcern']->isDefault()) {
-            unset($options['writeConcern']);
+        if (isset($this->options['writeConcern']) && $this->options['writeConcern']->isDefault()) {
+            unset($this->options['writeConcern']);
         }
-
-        $this->databaseName = $databaseName;
-        $this->collectionName = $collectionName;
-        $this->options = $options;
     }
 
     /**
@@ -143,9 +132,10 @@ class CreateIndexes implements Executable
 
         $this->executeCommand($server);
 
-        return array_map(function (IndexInput $index) {
-            return (string) $index;
-        }, $this->indexes);
+        return array_map(
+            'strval',
+            $this->indexes,
+        );
     }
 
     /**

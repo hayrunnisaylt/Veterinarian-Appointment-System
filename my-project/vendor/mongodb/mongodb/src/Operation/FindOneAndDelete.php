@@ -29,16 +29,20 @@ use function MongoDB\is_document;
  *
  * @see \MongoDB\Collection::findOneAndDelete()
  * @see https://mongodb.com/docs/manual/reference/command/findAndModify/
+ *
+ * @final extending this class will not be supported in v2.0.0
  */
 class FindOneAndDelete implements Executable, Explainable
 {
-    /** @var FindAndModify */
-    private $findAndModify;
+    private FindAndModify $findAndModify;
 
     /**
      * Constructs a findAndModify command for deleting a document.
      *
      * Supported options:
+     *
+     *  * codec (MongoDB\Codec\DocumentCodec): Codec used to decode documents
+     *    from BSON to PHP objects.
      *
      *  * collation (document): Collation specification.
      *
@@ -79,7 +83,7 @@ class FindOneAndDelete implements Executable, Explainable
      * @param array        $options        Command options
      * @throws InvalidArgumentException for parameter/option parsing errors
      */
-    public function __construct(string $databaseName, string $collectionName, $filter, array $options = [])
+    public function __construct(string $databaseName, string $collectionName, array|object $filter, array $options = [])
     {
         if (! is_document($filter)) {
             throw InvalidArgumentException::expectedDocumentType('$filter', $filter);
@@ -98,7 +102,7 @@ class FindOneAndDelete implements Executable, Explainable
         $this->findAndModify = new FindAndModify(
             $databaseName,
             $collectionName,
-            ['query' => $filter, 'remove' => true] + $options
+            ['query' => $filter, 'remove' => true] + $options,
         );
     }
 
