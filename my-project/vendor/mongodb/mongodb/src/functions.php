@@ -201,8 +201,13 @@ function get_encrypted_fields_from_driver(string $databaseName, string $collecti
  * @see Database::dropCollection()
  * @return array|object|null
  */
-function get_encrypted_fields_from_server(string $databaseName, string $collectionName, Server $server)
+function get_encrypted_fields_from_server(string $databaseName, string $collectionName, Manager $manager, Server $server)
 {
+    // No-op if the encryptedFieldsMap autoEncryption driver option was omitted
+    if ($manager->getEncryptedFieldsMap() === null) {
+        return null;
+    }
+
     $collectionInfoIterator = (new ListCollections($databaseName, ['filter' => ['name' => $collectionName]]))->execute($server);
 
     foreach ($collectionInfoIterator as $collectionInfo) {
@@ -430,8 +435,8 @@ function is_write_concern_acknowledged(WriteConcern $writeConcern): bool
 function server_supports_feature(Server $server, int $feature): bool
 {
     $info = $server->getInfo();
-    $maxWireVersion = isset($info['maxWireVersion']) ? (int) $info['maxWireVersion'] : 0;
-    $minWireVersion = isset($info['minWireVersion']) ? (int) $info['minWireVersion'] : 0;
+    $maxWireVersion = isset($info['maxWireVersion']) ? (integer) $info['maxWireVersion'] : 0;
+    $minWireVersion = isset($info['minWireVersion']) ? (integer) $info['minWireVersion'] : 0;
 
     return $minWireVersion <= $feature && $maxWireVersion >= $feature;
 }

@@ -147,7 +147,7 @@ class Count implements Executable, Explainable
             throw new UnexpectedValueException('count command did not return a numeric "n" value');
         }
 
-        return (int) $result->n;
+        return (integer) $result->n;
     }
 
     /**

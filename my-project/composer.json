@@ -3,12 +3,16 @@
     "config": {
         "platform-check": false,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+        "composer/package-versions-deprecated": true
+        },
+        "platform": {
+        "php": "8.2.0",
+        "ext-mongodb": "1.21.0"
         }
-    },
+    },  
     "require": {
-        "php": "^8.0",
-        "mongodb/mongodb": "^1.16"
+        "php": "8.2.0",
+        "mongodb/mongodb": "1.21.0"
     },
     "authors": [
         {

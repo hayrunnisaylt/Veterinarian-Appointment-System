@@ -83,8 +83,6 @@ class Client
 
     private WriteConcern $writeConcern;
 
-    private bool $autoEncryptionEnabled;
-
     /**
      * Constructs a new Client instance.
      *
@@ -119,8 +117,12 @@ class Client
             throw InvalidArgumentException::invalidType('"typeMap" driver option', $driverOptions['typeMap'], 'array');
         }
 
-        if (isset($driverOptions['autoEncryption']) && is_array($driverOptions['autoEncryption'])) {
-            $driverOptions['autoEncryption'] = $this->prepareEncryptionOptions($driverOptions['autoEncryption']);
+        if (isset($driverOptions['autoEncryption']['keyVaultClient'])) {
+            if ($driverOptions['autoEncryption']['keyVaultClient'] instanceof self) {
+                $driverOptions['autoEncryption']['keyVaultClient'] = $driverOptions['autoEncryption']['keyVaultClient']->manager;
+            } elseif (! $driverOptions['autoEncryption']['keyVaultClient'] instanceof Manager) {
+                throw InvalidArgumentException::invalidType('"keyVaultClient" autoEncryption option', $driverOptions['autoEncryption']['keyVaultClient'], [self::class, Manager::class]);
+            }
         }
 
         if (isset($driverOptions['builderEncoder']) && ! $driverOptions['builderEncoder'] instanceof Encoder) {
@@ -132,11 +134,6 @@ class Client
         $this->uri = $uri ?? self::DEFAULT_URI;
         $this->builderEncoder = $driverOptions['builderEncoder'] ?? new BuilderEncoder();
         $this->typeMap = $driverOptions['typeMap'];
-
-        /* Database and Collection objects may need to know whether auto
-         * encryption is enabled for dropping collections. Track this via an
-         * internal option until PHPC-2615 is implemented. */
-        $this->autoEncryptionEnabled = isset($driverOptions['autoEncryption']['keyVaultNamespace']);
 
         $driverOptions = array_diff_key($driverOptions, ['builderEncoder' => 1, 'typeMap' => 1]);
 
@@ -209,7 +206,13 @@ class Client
      */
     public function createClientEncryption(array $options)
     {
-        $options = $this->prepareEncryptionOptions($options);
+        if (isset($options['keyVaultClient'])) {
+            if ($options['keyVaultClient'] instanceof self) {
+                $options['keyVaultClient'] = $options['keyVaultClient']->manager;
+            } elseif (! $options['keyVaultClient'] instanceof Manager) {
+                throw InvalidArgumentException::invalidType('"keyVaultClient" option', $options['keyVaultClient'], [self::class, Manager::class]);
+            }
+        }
 
         return $this->manager->createClientEncryption($options);
     }
@@ -255,7 +258,7 @@ class Client
      */
     public function getCollection(string $databaseName, string $collectionName, array $options = []): Collection
     {
-        $options += ['typeMap' => $this->typeMap, 'builderEncoder' => $this->builderEncoder, 'autoEncryptionEnabled' => $this->autoEncryptionEnabled];
+        $options += ['typeMap' => $this->typeMap, 'builderEncoder' => $this->builderEncoder];
 
         return new Collection($this->manager, $databaseName, $collectionName, $options);
     }
@@ -270,7 +273,7 @@ class Client
      */
     public function getDatabase(string $databaseName, array $options = []): Database
     {
-        $options += ['typeMap' => $this->typeMap, 'builderEncoder' => $this->builderEncoder, 'autoEncryptionEnabled' => $this->autoEncryptionEnabled];
+        $options += ['typeMap' => $this->typeMap, 'builderEncoder' => $this->builderEncoder];
 
         return new Database($this->manager, $databaseName, $options);
     }
@@ -488,27 +491,5 @@ class Client
         }
 
         return $mergedDriver;
-    }
-
-    private function prepareEncryptionOptions(array $options): array
-    {
-        if (isset($options['keyVaultClient'])) {
-            if ($options['keyVaultClient'] instanceof self) {
-                $options['keyVaultClient'] = $options['keyVaultClient']->manager;
-            } elseif (! $options['keyVaultClient'] instanceof Manager) {
-                throw InvalidArgumentException::invalidType('"keyVaultClient" option', $options['keyVaultClient'], [self::class, Manager::class]);
-            }
-        }
-
-        // The server requires an empty document for automatic credentials.
-        if (isset($options['kmsProviders']) && is_array($options['kmsProviders'])) {
-            foreach ($options['kmsProviders'] as $name => $provider) {
-                if ($provider === []) {
-                    $options['kmsProviders'][$name] = new stdClass();
-                }
-            }
-        }
-
-        return $options;
     }
 }
