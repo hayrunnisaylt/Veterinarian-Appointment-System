@@ -82,7 +82,7 @@ class BSONDocument extends ArrayObject implements JsonSerializable, Serializable
      * @return stdClass
      */
     #[ReturnTypeWillChange]
-    public function bsonSerialize()
+    public function bsonSerialize(): array|\stdClass|\MongoDB\BSON\Document|\MongoDB\BSON\PackedArray
     {
         return (object) $this->getArrayCopy();
     }
