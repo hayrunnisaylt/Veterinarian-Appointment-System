@@ -12,16 +12,13 @@
             <?php
             require 'vendor/autoload.php';
             
-            // 1. DOKUNUŞ: Bağlantıyı db.php'den çekmek daha profesyoneldir.
-            // Ama şimdilik manuel kalsın dersen bu kod çalışır.
             $clientUri = "mongodb+srv://dbHayrunnisa:1377Nisa.@cluster0.ibqgzo4.mongodb.net/?appName=Cluster0";
             $manager = new MongoDB\Client($clientUri);
             $db = $manager->veteriner_randevu;
             $usersCollection = $db->kullanicilar;
 
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                // 2. DOKUNUŞ: trim() ekleyerek görünmez boşlukları temizliyoruz.
-                // Login'deki hata genelde buradan kaynaklanır.
+                
                 $adSoyad = trim($_POST['kullanıcı-adı']);
                 $email = trim($_POST['email']);
                 $tel = trim($_POST['tel']);
