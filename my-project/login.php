@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+error_reporting(E_ALL & ~E_DEPRECATED);
 ob_start();
 session_start();
 include 'db.php';
@@ -178,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         </form>
 
         <div class="footer-text">
-            Hesabınız yok mu? <a href="register.php">Hemen Kayıt Olun</a>
+            Hesabınız yok mu? <a href="kayıt_ol.php">Hemen Kayıt Olun</a>
         </div>
     </div>
 
