@@ -95,8 +95,8 @@ body{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-right: 980px;
-	padding-top: 2px;
+    padding-right: 0; /* 980px olan değeri 0 yapıyoruz */
+    padding-top: 2px;
 }
 .logo_yazısı .ilk {
     margin-left: 0;
