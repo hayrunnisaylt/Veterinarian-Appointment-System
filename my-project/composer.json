@@ -1,18 +1,18 @@
 {
     "name": "hayrunnisa/htdocs",
     "config": {
-        "platform-check": false,
-        "allow-plugins": {
-        "composer/package-versions-deprecated": true
+            "platform-check": false,
+            "allow-plugins": {
+            "composer/package-versions-deprecated": true
         },
         "platform": {
-        "php": "8.2.0",
-        "ext-mongodb": "1.21.0"
+            "php": "8.2.0",
+            "ext-mongodb": "1.21.0"
         }
     },  
     "require": {
-        "php": "8.2.0",
-        "mongodb/mongodb": "1.21.0"
+        "php": "^8.1",
+        "mongodb/mongodb": "^1.21"
     },
     "authors": [
         {

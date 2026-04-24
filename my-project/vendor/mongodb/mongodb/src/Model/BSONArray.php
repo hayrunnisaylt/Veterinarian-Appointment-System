@@ -68,10 +68,10 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      * as a BSON array.
      *
      * @see https://php.net/mongodb-bson-serializable.bsonserialize
-     * @return array
+     * @return array|\stdClass|\MongoDB\BSON\Document|\MongoDB\BSON\PackedArray
      */
     #[ReturnTypeWillChange]
-    public function bsonSerialize()
+    public function bsonSerialize(): array|\stdClass|\MongoDB\BSON\Document|\MongoDB\BSON\PackedArray
     {
         return array_values($this->getArrayCopy());
     }
@@ -80,12 +80,12 @@ class BSONArray extends ArrayObject implements JsonSerializable, Serializable, U
      * Unserialize the document to BSON.
      *
      * @see https://php.net/mongodb-bson-unserializable.bsonunserialize
-     * @param array<int, mixed> $data Array data
+     * @param array $data Array data
      */
     #[ReturnTypeWillChange]
-    public function bsonUnserialize(array $data)
+    public function bsonUnserialize(array $data): void
     {
-        parent::__construct($data);
+        $this->exchangeArray($data);
     }
 
     /**
